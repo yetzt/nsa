@@ -1,0 +1,16 @@
+{
+  "name": "nsa",
+  "version": "0.0.0",
+  "description": "nsa sees all",
+  "main": "nsa.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yetzt/nsa.git"
+  },
+  "author": "yetzt <git@yetzt.me> (https://github.com/yetzt)",
+  "license": "UNLICENSE",
+  "bugs": {
+    "url": "https://github.com/yetzt/nsa/issues"
+  },
+  "homepage": "https://github.com/yetzt/nsa"
+}
