@@ -1,16 +1,21 @@
 {
-  "name": "nsa",
-  "version": "0.0.0",
-  "description": "nsa sees all",
-  "main": "nsa.js",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/yetzt/nsa.git"
-  },
-  "author": "yetzt <git@yetzt.me> (https://github.com/yetzt)",
-  "license": "UNLICENSE",
-  "bugs": {
-    "url": "https://github.com/yetzt/nsa/issues"
-  },
-  "homepage": "https://github.com/yetzt/nsa"
+	"name": "nsa",
+	"version": "0.0.0",
+	"description": "nsa sees all",
+	"main": "nsa.js",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/yetzt/nsa.git"
+	},
+	"dependencies": {
+		"commander": ">= 2.2.0",
+		"express": ">= 4.2.0",
+		"merge": ">= 1.1.3"
+	},
+	"author": "yetzt <git@yetzt.me> (https://github.com/yetzt)",
+	"license": "UNLICENSE",
+	"bugs": {
+		"url": "https://github.com/yetzt/nsa/issues"
+	},
+	"homepage": "https://github.com/yetzt/nsa"
 }
