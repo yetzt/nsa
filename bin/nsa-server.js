@@ -57,21 +57,44 @@ config.get("listen").forEach(function(l){
 	listener.listen(l);
 });
 
-/* initialize express */
-var app = express();
-
-app.get("/", function(req, res){
-	res.send("hello.")
-	// FIXME: keep on hacking here
-});
-
 /* listen according to config and stuff */
 (function(){
 
-	if (!config.has("web") || config.type("web") !== "string") {
-		console.error("could not start app");
-		process.exit(2);
-	}
+	if (!config.has("web") || config.type("web") !== "string") return;
+
+	/* initialize express */
+	var app = express();
+	var server = require('http').createServer(app);
+	var io = require("socket.io").listen(server, {log: false});
+
+	/* serve assets */
+	app.use("/assets", express.static(path.resolve(__dirname, "../assets")));
+
+	/* send index file */
+	app.get("/", function(req, res){
+		res.sendfile(path.resolve(__dirname, "../assets/html/index.html"));
+	});
+	
+	io.sockets.on('connection', function (socket) {
+		listener.getnodes(function(nodes){
+			socket.emit('nodes', nodes);
+		});
+
+	});
+	
+	listener.on("node+info", function(info){
+		io.sockets.emit("info", info);
+	}).on("node+inactive", function(id){
+		io.sockets.emit("inactive", id);
+	}).on("node+register", function(id){
+		io.sockets.emit("register", id);
+	}).on("node+active", function(id){
+		io.sockets.emit("active", id);
+	}).on("node+reset", function(id){
+		io.sockets.emit("reset", id);
+	}).on("node+retire", function(id){
+		io.sockets.emit("remove", id);
+	});
 	
 	var listen = url.parse(config.get("web"));
 	
@@ -94,7 +117,7 @@ app.get("/", function(req, res){
 				process.exit(4);
 			}
 			
-			app.listen(listen.pathname, function(){
+			server.listen(listen.pathname, function(){
 				if (config.get("info")) console.log("listening on socket", listen.pathname);
 
 				/* check options */
@@ -123,11 +146,11 @@ app.get("/", function(req, res){
 		case "http:":
 			if (listen.hasOwnProperty("hostname") && typeof listen.hostname === "string" && listen.hostname !== "") {
 				/* listen on hostname and port */
-				app.listen((listen.port || 46001), listen.hostname, function(err){
+				server.listen((listen.port || 46001), listen.hostname, function(err){
 					if (config.get("info")) console.log("listening on http://", listen.hostname, ":", (listen.port || 46001));
 				});
 			} else {
-				app.listen((listen.port || 46001), function(err){
+				server.listen((listen.port || 46001), function(err){
 					if (config.get("info")) console.log("listening on http://*:", (listen.port || 46001));
 				});
 			}
