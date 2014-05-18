@@ -2,7 +2,7 @@
 
 nsa sees all, because nsa is the networked status aggregator.
 
-[!nsa successful in europe](assets/images/nsa-promo.jpg)
+![nsa successful in europe](assets/images/nsa-promo.jpg)
 
 the idea is simple: nsa receives hartbeats over network sockets (currently only udp) and displays running services on a web interface (and, in the future, does other stuff with them).
 
