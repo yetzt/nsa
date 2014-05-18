@@ -1,0 +1,163 @@
+body {
+	display: block;
+	position: relative;
+	margin: 0px;
+	padding: 0px;
+	background: #31363b url(../images/concrete_wall.png) top left repeat;
+	font-family: "Source Sans Pro", sans-serif;
+}
+
+	#grid {
+		
+		display: block;
+		position: relative;
+		margin: 0px 0px 20px 0px;
+		padding: 0px auto;
+		
+	}
+		
+		#grid .grid-item {
+			
+			display: block;
+			position: relative;
+			width: 100%;
+			background-color: rgba(0,0,0,0.2);
+			border-radius: 4px;
+			padding: 10px;
+			color: #fff;
+			margin-top: 20px;
+			transition: box-shadow 0.3s ease-in-out;
+			box-shadow: none;
+			
+		}
+
+			#grid .blink .grid-item {
+
+				box-shadow: 0px 0px 30px 10px rgba(128,128,255,0.8);
+
+			}
+
+			#grid .go-active .grid-item {
+
+				box-shadow: 0px 0px 30px 10px rgba(128,255,128,0.8);
+
+			}
+
+			#grid .go-inactive .grid-item {
+
+				box-shadow: 0px 0px 30px 10px rgba(255,128,128,0.8);
+
+			}
+			
+		
+			#grid .active .grid-item {
+			
+				border-bottom: 20px solid rgba(0,255,0,0.5);
+			
+			}
+
+			#grid .inactive .grid-item {
+			
+				border-bottom: 20px solid rgba(255,0,0,0.5);
+			
+			}
+		
+			#grid .grid-item h1 {
+				
+				display: block;
+				min-height: 20px;
+				line-height: 20px;
+				background-color: rgba(255,255,255,0.02);
+				border-radius: 10px;
+				margin: 0px;
+				padding: 15px 10px 10px;
+				font-size: 1.6em;
+				font-family: "Source Sans Pro", fixed;
+				font-weight: 400;
+				
+			}
+			
+				#grid .grid-item h1 .service {
+					
+					color: #28d;
+					font-size: 1.4em;
+					float: left;
+					
+				}
+
+				#grid .grid-item h1 .node {
+					
+					font-size: 1em;
+					color: #888;
+					font-weight: 300;
+					float: left;
+					
+				}
+				
+					#grid .grid-item h1 .node:before {
+						content: "@";
+					}
+					
+			#grid .grid-item ul {
+				
+				display: block;
+				list-style: none;
+				margin: 0px;
+				padding: 0px;
+				position: relative;
+				height: 50px;
+				background-color: rgba(255,255,255,0.02);
+				border-radius: 10px;
+				margin-top: 10px;
+
+			}
+
+				#grid .grid-item ul li {
+
+					display: block;
+					position: relative;
+					list-style: none;
+					margin: 0px;
+					padding: 0px;
+					height: 50px;
+					float: left;
+					
+				}
+				
+					#grid .grid-item ul li+li {
+						
+						border-left: 1px dotted #222;
+						
+					}
+								
+					#grid .grid-item ul li span {
+						
+						display: block;
+						position: absolute;
+						left: 0px;
+						bottom: 0px;
+						right: 0px;
+						text-align: center;
+						height: 20px;
+						line-height: 20px;
+						text-transform: lowercase;
+						font-size: .75em;
+						font-weight: 300;
+						color: #999;
+						
+					}
+					
+					#grid .grid-item ul li strong {
+						
+						display: block;
+						position: relative;
+						text-align: center;
+						height: 30px;
+						line-height: 40px;
+						text-transform: lowercase;
+						font-size: 1.4em;
+						padding: 0px 10px;
+						font-weight: 300;
+						
+					}
+				
