@@ -22,7 +22,7 @@ commander
 	.version(pkg.version)
 	.option("-c, --config [config.js]", "config file")
 	.option("-w, --web [url]", "web interface url")
-	.option("-l, --listen [url]", "listen url", function(value,store){ store.push(value); }, [])
+	.option("-l, --listen [url]", "listen url", function(v, s){ s.push(v); return s; }, [])
 	.option("-v, --verbose", "say it loud", function(val, store){ store++; }, 0)
 	.parse(process.argv);
 
