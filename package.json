@@ -1,8 +1,11 @@
 {
 	"name": "nsa",
 	"version": "0.0.0",
-	"description": "nsa sees all",
+	"description": "networked status aggregator",
 	"main": "nsa.js",
+	"bin": {
+		"nsa": "./bin/nsa-server.js"
+	},
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/yetzt/nsa.git"
@@ -10,12 +13,14 @@
 	"dependencies": {
 		"commander": ">= 2.2.0",
 		"express": ">= 4.2.0",
-		"merge": ">= 1.1.3"
+		"merge": ">= 1.1.3",
+		"dur": ">= 0.0.1"
 	},
 	"author": "yetzt <git@yetzt.me> (https://github.com/yetzt)",
 	"license": "UNLICENSE",
 	"bugs": {
 		"url": "https://github.com/yetzt/nsa/issues"
 	},
-	"homepage": "https://github.com/yetzt/nsa"
+	"homepage": "https://github.com/yetzt/nsa",
+	"keywords": ["nsa"]
 }
