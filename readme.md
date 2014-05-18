@@ -2,6 +2,10 @@
 
 nsa sees all, because nsa is the networked status aggregator.
 
+the idea is simple: nsa receives hartbeats over network sockets (currently only udp) and displays running services on a web interface (and, in the future, does other stuff with them).
+
+nsa is as simple as possible: clients just send heartbeats and nsa displays new clients on the go. other than deciding on where to listen, no further configuration is required. maybe some sort of simple authentication will be implemented, but for now it's all just working out of the box.  
+
 ## Server
 
 ### Install
@@ -19,6 +23,8 @@ npm install -g nsa
 
 You can use `--listen` more than once.
 
+See also [config.js.dist](config.js.dist);
+
 ## Client
 
 ### Install
@@ -34,10 +40,10 @@ npm install nsa
 var nsa = require("nsa");
 
 var heart = new nsa({
-	server: "udp4://localhost:8888",
-	service: "example",
-	node: "example",
-	interval: "10s"
+	server: "udp4://localhost:8888", // nsa server
+	service: "example",              // service name; default: filename of main module
+	node: "example",                 // name of the node; default: hostname
+	interval: "10s"                  // interval between heartbeats
 });
 
 /* send a single heartbeat */
@@ -48,6 +54,9 @@ heart.start();
 
 /* stop sending heartbeats */
 heart.stop();
+
+/* tell the nsa server to stop caring about this service */
+heart.end();
 
 ````
 
