@@ -45,13 +45,33 @@ if (!config.get("listen")) {
 if (config.type("listen") !== "array") config.set("listen", [config.get("listen")]);
 
 /* initialize listeners */
-var listener = cia().on("error", function(err){
+var listener = cia();
+
+/*
+listener.on("error", function(err){
 	console.log("cia error", err);
 }).on("listening", function(addr){
 	console.log("cia listening", addr);
 }).on("close", function(addr){
 	console.log("cia closed", addr);
-});
+}).on("error", function(err){
+	console.log("error", err)
+}).on("message", function(message){
+	// console.log("message", message)
+}).on("node+info", function(info){
+	// console.log("info", info)
+}).on("node+inactive", function(id){
+	console.log("node inactive:", id);
+}).on("node+register", function(id){
+	console.log("new node:", id);
+}).on("node+active", function(id){
+	console.log("node active:", id);
+}).on("node+reset", function(id){
+	console.log("node reset:", id);
+}).on("node+retire", function(id){
+	console.log("node retired:", id);
+}).getnodes(console.log);
+*/
 
 config.get("listen").forEach(function(l){
 	listener.listen(l);
