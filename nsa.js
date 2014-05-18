@@ -51,7 +51,7 @@ function nsa(opts, callback){
 	}
 
 	/* check nodename or set */
-	if (!opts.hasOwnProperty("node") || typeof opts.service !== "string" || opts.service === "") {
+	if (!opts.hasOwnProperty("node") || typeof opts.node !== "string" || opts.node === "") {
 		this.opts.node = require("os").hostname();
 	} else {
 		this.opts.node = opts.node;
