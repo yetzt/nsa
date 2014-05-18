@@ -132,7 +132,8 @@ config.get("listen").forEach(function(l){
 			/* add .sock to socket if not present */
 			if (!/\.sock(et)?$/.test(listen.pathname)) listen.pathname += ".sock";
 
-			if (fs.existsSync(listen.pathname) && !fs.unlinkSync(listen.pathname)) {
+			if (fs.existsSync(listen.pathname)) fs.unlinkSync(listen.pathname);
+			if (fs.existsSync(listen.pathname)) {
 				console.error("previous socket could not be unlinked");
 				process.exit(4);
 			}
