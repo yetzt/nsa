@@ -11,11 +11,11 @@ var express = require("express");
 var commander = require("commander");
 
 /* local modules */
-var cia = require("./lib/cia");
-var gchq = require("./lib/gchq");
+var cia = require("../lib/cia");
+var gchq = require("../lib/gchq");
 
 /* load package.json */
-var pkg = require(path.resolve(__dirname, "package.json"));
+var pkg = require(path.resolve(__dirname, "../package.json"));
 
 /* parse arguments */
 commander
@@ -28,7 +28,7 @@ commander
 
 /* load config */
 var config = gchq()
-	.file(path.resolve("config.js", __dirname))
+	.file(path.resolve(__dirname, "../config.js"))
 	.file(commander.config)
 	.set("web", commander.web)
 	.set("listen", commander.listen)
