@@ -5,6 +5,215 @@ body {
 	padding: 0px;
 	background: #31363b url(../images/concrete_wall.png) top left repeat;
 	font-family: "Source Sans Pro", sans-serif;
+	overflow: hidden;
+}
+
+	/*
+	
+		blue: #0a89d6;
+		green: #419606;
+		red: #e94f03;
+		yellow: #d19215;
+		pink: #ff2082;
+	
+	*/
+
+	#grid {
+		
+		display: block;
+		position: relative;
+		margin: 0px auto;
+		padding: 5px;
+		/* background-color: rgba(255,255,255,0.05); */
+		border-radius: 4px;
+		
+	}
+
+		@media all and (min-width: 1800px) { 
+			#grid { width: 1800px; }
+		}
+		
+		@media all and (min-width: 1500px) and (max-width: 1799px) { 
+			#grid {width: 1500px;}
+		}
+		@media all and (min-width: 1200px) and (max-width: 1499px) { 
+			#grid {width: 1200px;}
+		}
+		@media all and (min-width: 900px) and (max-width: 1199px) { 
+			#grid {width: 900px;}
+		}
+		@media all and (min-width: 600px) and (max-width: 899px) { 
+			#grid {width: 600px;}
+		}
+		@media all and (min-width: 300px) and (max-width: 599px) { 
+			#grid {width: 300px;}
+			#grid .item.double-width { width: 290px !important; }
+		}
+		@media all and (max-width: 299px) {
+			#grid { width: 100%; margin: 0px; }
+			#grid .item { width: 100%; margin: 5px -5px;}
+			#grid .item.double-width { width: 100%; margin: 5px -5px;}
+		}
+	
+		#grid .item {
+			
+			display: block;
+			position: relative;
+			float: left;
+			height: 200px;
+			width: 290px;
+			margin: 5px;
+			background-color: rgba(10,10,10,0.8);
+			color: #fff;
+			text-shadow: 0px 0px 5px rgba(0,0,0,0.3);
+			transition: background-color 0.3s ease-in-out;
+			
+		}
+		
+		#grid .item.double-width {
+			
+			width: 590px;
+			
+		}
+		
+		#grid .item.double-height {
+			
+			height: 410px;
+			
+		}
+		
+		#grid .item.active {
+			
+			background-color: #419606;
+			
+		}
+
+		#grid .item.inactive {
+			
+			background-color: #e94f03;
+			
+		}
+		
+		#grid .item h1 {
+			
+			display: block;
+			position: absolute;
+			left: 0px;
+			right: 0px;
+			bottom: 70px;
+			
+			min-height: 30px;
+			line-height: 30px;
+			margin: 0px;
+			padding: 15px 10px 10px;
+			font-size: 1.6em;
+			font-family: "Source Sans Pro", fixed;
+			font-weight: 400;
+			
+		}
+		
+			#grid .item h1 .service {
+				
+				color: #fff;
+				font-size: 1.4em;
+				float: left;
+				
+			}
+
+			#grid .item h1 .node {
+				
+				font-size: 1em;
+				color: #fff;
+				font-weight: 300;
+				float: left;
+				
+			}
+			
+				#grid .item h1 .node:before {
+					content: "@";
+				}
+				
+		#grid .item ul {
+			
+			display: block;
+			position: absolute;
+			bottom: 20px;
+			left: 0px;
+			right: 0px;
+			list-style: none;
+			margin: 0px;
+			padding: 0px;
+			height: 50px;
+			border-radius: 10px;
+			margin-top: 10px;
+
+		}
+
+			#grid .item ul li {
+
+				display: block;
+				position: relative;
+				list-style: none;
+				margin: 0px;
+				padding: 0px;
+				height: 50px;
+				width: 25%;
+				float: left;
+				
+			}
+
+				#grid .item ul li span {
+					
+					display: block;
+					position: absolute;
+					left: 0px;
+					bottom: 0px;
+					right: 0px;
+					text-align: center;
+					height: 20px;
+					line-height: 20px;
+					text-transform: lowercase;
+					font-size: .75em;
+					font-weight: 300;
+					color: #fff;
+					
+				}
+				
+				#grid .item ul li strong {
+					
+					display: block;
+					position: relative;
+					text-align: center;
+					height: 30px;
+					line-height: 40px;
+					text-transform: lowercase;
+					font-size: 1.6em;
+					padding: 0px 10px;
+					font-weight: 300;
+					
+				}
+		
+		
+		
+		
+.clearfix:before,
+.clearfix:after {
+	display: table;
+	clear: both;
+	content: " ";
+}
+
+
+
+/*
+
+body {
+	display: block;
+	position: relative;
+	margin: 0px;
+	padding: 0px;
+	background: #31363b url(../images/concrete_wall.png) top left repeat;
+	font-family: "Source Sans Pro", sans-serif;
 }
 
 	#grid {
@@ -16,7 +225,7 @@ body {
 		
 	}
 		
-		#grid .grid-item {
+		#grid .item {
 			
 			display: block;
 			position: relative;
@@ -31,38 +240,38 @@ body {
 			
 		}
 
-			#grid .blink .grid-item {
+			#grid .blink .item {
 
 				box-shadow: 0px 0px 30px 10px rgba(128,128,255,0.8);
 
 			}
 
-			#grid .go-active .grid-item {
+			#grid .go-active .item {
 
 				box-shadow: 0px 0px 30px 10px rgba(128,255,128,0.8);
 
 			}
 
-			#grid .go-inactive .grid-item {
+			#grid .go-inactive .item {
 
 				box-shadow: 0px 0px 30px 10px rgba(255,128,128,0.8);
 
 			}
 			
 		
-			#grid .active .grid-item {
+			#grid .active .item {
 			
 				border-bottom: 20px solid rgba(0,255,0,0.5);
 			
 			}
 
-			#grid .inactive .grid-item {
+			#grid .inactive .item {
 			
 				border-bottom: 20px solid rgba(255,0,0,0.5);
 			
 			}
 		
-			#grid .grid-item h1 {
+			#grid .item h1 {
 				
 				display: block;
 				min-height: 20px;
@@ -77,7 +286,7 @@ body {
 				
 			}
 			
-				#grid .grid-item h1 .service {
+				#grid .item h1 .service {
 					
 					color: #28d;
 					font-size: 1.4em;
@@ -85,7 +294,7 @@ body {
 					
 				}
 
-				#grid .grid-item h1 .node {
+				#grid .item h1 .node {
 					
 					font-size: 1em;
 					color: #888;
@@ -94,11 +303,11 @@ body {
 					
 				}
 				
-					#grid .grid-item h1 .node:before {
+					#grid .item h1 .node:before {
 						content: "@";
 					}
 					
-			#grid .grid-item ul {
+			#grid .item ul {
 				
 				display: block;
 				list-style: none;
@@ -112,7 +321,7 @@ body {
 
 			}
 
-				#grid .grid-item ul li {
+				#grid .item ul li {
 
 					display: block;
 					position: relative;
@@ -124,13 +333,13 @@ body {
 					
 				}
 				
-					#grid .grid-item ul li+li {
+					#grid .item ul li+li {
 						
 						border-left: 1px dotted #222;
 						
 					}
 								
-					#grid .grid-item ul li span {
+					#grid .item ul li span {
 						
 						display: block;
 						position: absolute;
@@ -147,7 +356,7 @@ body {
 						
 					}
 					
-					#grid .grid-item ul li strong {
+					#grid .item ul li strong {
 						
 						display: block;
 						position: relative;
@@ -160,4 +369,6 @@ body {
 						font-weight: 300;
 						
 					}
+					
+*/
 				
