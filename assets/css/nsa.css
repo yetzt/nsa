@@ -94,6 +94,12 @@ body {
 			
 		}
 		
+		#grid .item.info {
+			
+			background-color: #0a89d6 !important;
+			
+		}
+		
 		#grid .item h1 {
 			
 			display: block;

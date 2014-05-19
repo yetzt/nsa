@@ -211,6 +211,10 @@ nsa.prototype.beat = function(callback){
 
 /* stop heartbeats and send retirement packet to server */
 nsa.prototype.end = function(callback){
+
+	/* if no callback, define noop callback */
+	if (typeof callback !== "function") var callback = function(){};
+
 	this.stop(function(){
 		this._send.call(this, 1, function(){
 			this._end.call(this, function(){

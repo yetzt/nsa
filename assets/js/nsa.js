@@ -16,14 +16,19 @@ $(document).ready(function(){
 
 	socket.on('inactive', function(id){
 		$('#node-'+id).removeClass("active").addClass("inactive");
+		$("#node-"+id+" li.uptime span", $node).text("downtime");
 	});
 
 	socket.on('active', function(id){
 		$('#node-'+id).removeClass("inactive").addClass("active");
+		$("#node-"+id+" li.uptime span", $node).text("uptime");
 	});
 
 	socket.on('reset', function(id){
-		$('#node-'+id).addClass("blink");
+		$('#node-'+id).addClass("info").parent().one("webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend", function(){
+		    // your code when the transition has finished
+			$('#node-'+id).removeClass("info");
+		});
 	});
 
 	socket.on('remove', function(id){
@@ -52,7 +57,7 @@ var _redraw = function(){
 	}
 	var _top = (($(window).innerWidth()-$('#grid').outerWidth())/2);
 }
-var _template = '<div id="node-{{id}}" class="item {{#active}}active{{/active}}{{^active}}inactive{{/active}}"><div class="grid-item clearfix"><h1 class="clearfix"><span class="service">{{service}}</span><span class="node">{{node}}</span></h1><ul class="content"><li class="count"><span>signals</span> <strong>{{count}}</strong></li><li class="age"><span>known</span> <strong>{{age}}</strong></li><li class="updated"><span>last signal</span> <strong>{{updated}}</strong></li><li class="uptime"><span>uptime</span> <strong>{{uptime}}</strong></li></ul></div></div>';
+var _template = '<div id="node-{{id}}" class="item {{#active}}active{{/active}}{{^active}}inactive{{/active}}"><div class="grid-item clearfix"><h1 class="clearfix"><span class="service">{{service}}</span><span class="node">{{node}}</span></h1><ul class="content"><li class="count"><span>signals</span> <strong>{{count}}</strong></li><li class="age"><span>known</span> <strong>{{age}}</strong></li><li class="updated"><span>last signal</span> <strong>{{updated}}</strong></li><li class="uptime"><span>{{#active}}uptime{{/active}}{{^active}}downtime{{/active}}</span> <strong>{{#active}}{{uptime}}{{/active}}{{^active}}0s{{/active}}</strong></li></ul></div></div>';
 
 var _handle = function(node){
 
@@ -63,14 +68,16 @@ var _handle = function(node){
 
 		if ($node.hasClass("active") && node.active === false) {
 			$node.removeClass("active").addClass("inactive");
+			$("li.uptime span", $node).text("downtime");
 		}
 
 		if ($node.hasClass("inactive") && node.active === true) {
 			$node.removeClass("inactive").addClass("active");
+			$("li.uptime span", $node).text("uptime");
 		}
 		
 		$("li.count strong", $node).text(node.count);
-		$("li.uptime strong", $node).text(moment(node.lastreset).fromNow(true));
+		$("li.uptime strong", $node).text(moment(node.active ? node.lastreset : node.updated).fromNow(true));
 		$("li.age strong", $node).text(moment(node.created).fromNow(true));
 		$("li.updated strong", $node).text(moment().diff(node.updated, 'seconds', true).toFixed(1)+"s");
 
