@@ -142,11 +142,11 @@ config.get("listen").forEach(function(l){
 			if (listen.hasOwnProperty("hostname") && typeof listen.hostname === "string" && listen.hostname !== "") {
 				/* listen on hostname and port */
 				server.listen((listen.port || 46001), listen.hostname, function(err){
-					if (config.get("info")) console.log("listening on http://", listen.hostname, ":", (listen.port || 46001));
+					if (config.get("info")) console.log("listening on http://"+listen.hostname+":"+(listen.port || 46001));
 				});
 			} else {
 				server.listen((listen.port || 46001), function(err){
-					if (config.get("info")) console.log("listening on http://*:", (listen.port || 46001));
+					if (config.get("info")) console.log("listening on http://*:"+(listen.port || 46001));
 				});
 			}
 		break;
