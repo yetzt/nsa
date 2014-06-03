@@ -57,7 +57,7 @@ var _redraw = function(){
 	}
 	var _top = (($(window).innerWidth()-$('#grid').outerWidth())/2);
 }
-var _template = '<div id="node-{{id}}" class="item {{#active}}active{{/active}}{{^active}}inactive{{/active}}"><div class="grid-item clearfix"><h1 class="clearfix"><span class="service">{{service}}</span><span class="node">{{node}}</span></h1><ul class="content"><li class="count"><span>signals</span> <strong>{{count}}</strong></li><li class="age"><span>known</span> <strong>{{age}}</strong></li><li class="updated"><span>last signal</span> <strong>{{updated}}</strong></li><li class="uptime"><span>{{#active}}uptime{{/active}}{{^active}}downtime{{/active}}</span> <strong>{{#active}}{{uptime}}{{/active}}{{^active}}0s{{/active}}</strong></li></ul></div></div>';
+var _template = '<div id="node-{{id}}" class="item {{#active}}active{{/active}}{{^active}}inactive{{/active}}"><div class="grid-item clearfix"><h1 class="clearfix"><span class="service">{{service}}</span><span class="node">{{node}}</span></h1><ul class="content"><li class="uptime"><span>{{#active}}uptime{{/active}}{{^active}}downtime{{/active}}</span> <strong>{{#active}}{{uptime}}{{/active}}{{^active}}0s{{/active}}</strong></li></ul></div></div>';
 
 var _handle = function(node){
 
@@ -76,10 +76,13 @@ var _handle = function(node){
 			$("li.uptime span", $node).text("uptime");
 		}
 		
-		$("li.count strong", $node).text(node.count);
 		$("li.uptime strong", $node).text(moment(node.active ? node.lastreset : node.updated).fromNow(true));
-		$("li.age strong", $node).text(moment(node.created).fromNow(true));
-		$("li.updated strong", $node).text(moment().diff(node.updated, 'seconds', true).toFixed(1)+"s");
+
+		if (node.hasOwnProperty("data") && Object.keys(node.data).length > 0) {
+			for (var key in node.data) if (node.data.hasOwnProperty(key)) {
+				$('strong', '#'+node.id+'-'+key.replace(/[^a-z0-9]/gi,'-')).text(node.data[key]);
+			}
+		}
 
 	} else {
 		
@@ -93,6 +96,13 @@ var _handle = function(node){
 			age: moment(node.created).fromNow(true),
 			updated: moment().diff(node.updated, 'seconds', true).toFixed(1)+"s"
 		}));
+
+		if (node.hasOwnProperty("data") && Object.keys(node.data).length > 0) {
+			for (var key in node.data) if (node.data.hasOwnProperty(key)) {
+				var _key = key.replace(/[^a-z0-9]/gi,'-');
+				$("ul.content", $node).append('<li id="'+node.id+'-'+_key+'"><span>'+key+'</span> <strong>'+node.data[key]+'</strong></li>');
+			}
+		}
 		
 		$grid.prepend($node);
 		$grid.masonry("prepended", $node);
