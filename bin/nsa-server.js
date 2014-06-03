@@ -56,6 +56,8 @@ config.get("listen").forEach(function(l){
 
 	if (!config.has("web") || config.type("web") !== "string") return;
 
+	var _opts = querystring.parse(url.parse(config.get("web")).query);
+
 	/* initialize express */
 	var app = express();
 	var server = require('http').createServer(app);
@@ -69,11 +71,22 @@ config.get("listen").forEach(function(l){
 		res.sendfile(path.resolve(__dirname, "../assets/html/index.html"));
 	});
 	
+	/* show status pages if configured */
+	if (_opts.hasOwnProperty("status")) {
+	
+		/* send nodes as json */
+		app.get("/nodes.json", function(req, res){
+			listener.getnodes(function(nodes){
+				res.json(nodes);
+			});
+		});
+
+	};
+	
 	io.sockets.on('connection', function (socket) {
 		listener.getnodes(function(nodes){
 			socket.emit('nodes', nodes);
 		});
-
 	});
 	
 	listener.on("node+info", function(info){
