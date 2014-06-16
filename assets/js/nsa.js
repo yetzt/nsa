@@ -15,13 +15,13 @@ $(document).ready(function(){
 	});
 
 	socket.on('inactive', function(id){
-		$('#node-'+id).removeClass("active").addClass("inactive");
-		$("#node-"+id+" li.uptime span", $node).text("downtime");
+		$('#node-'+id).removeClass('active').addClass('inactive');
+		$('#node-'+id+' li.uptime span').text('downtime');
 	});
 
 	socket.on('active', function(id){
-		$('#node-'+id).removeClass("inactive").addClass("active");
-		$("#node-"+id+" li.uptime span", $node).text("uptime");
+		$('#node-'+id).removeClass('inactive').addClass('active');
+		$('#node-'+id+' li.uptime span').text('uptime');
 	});
 
 	socket.on('reset', function(id){
