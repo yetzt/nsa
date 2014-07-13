@@ -4,7 +4,7 @@ module.exports = {
 	/* web interface, listening on socket, (--web on command line) */
 	web: "unix:/tmp/nsa-server.sock?mode=0777&status=true",
 
-	/* web intervace, http server, (--web on command line) */
+	/* web interface, http server, (--web on command line) */
 	web: "http://127.0.0.1:46001/?status=true",
 	
 	/* listening interfaces, (--listen on command line) */
