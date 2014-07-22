@@ -8,6 +8,27 @@ body {
 	overflow: hidden;
 }
 
+	#alert {
+		
+		display: none;
+		position: fixed;
+		margin: 0px;
+		padding: 10%;
+		background-color: #e94f03;
+		left: 0px;
+		right: 0px;
+		top: 25%;
+		bottom: 25%;
+		text-align: center;
+		color: #fff;
+		font-size: 5em;
+		opacity: 0.8;
+		text-transform: uppercase;
+		text-shadow: 0px 0px 20px rgba(0,0,0,0.3);
+		box-shadow: 0px 0px 50px rgba(0,0,0,0.5);
+		
+	}
+
 	/*
 	
 		blue: #0a89d6;

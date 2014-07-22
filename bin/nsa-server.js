@@ -70,6 +70,10 @@ config.get("listen").forEach(function(l){
 	app.get("/", function(req, res){
 		res.sendfile(path.resolve(__dirname, "../assets/html/index.html"));
 	});
+
+	app.get("/check", function(req, res){
+		res.json({status:true});
+	});
 	
 	/* show status pages if configured */
 	if (_opts.hasOwnProperty("status")) {

@@ -1,6 +1,9 @@
 
 $(document).ready(function(){
 
+	var _last = (new Date()).getTime();
+	var _fails = 0;
+
 	var $grid = $("#grid");
 
 	var socket = io.connect('/');
@@ -11,6 +14,8 @@ $(document).ready(function(){
 	});
 	
 	socket.on('info', function(node){
+		_last = (new Date()).getTime();
+		_fails = 0;
 		_handle(node);
 	});
 
@@ -41,6 +46,29 @@ $(document).ready(function(){
 	});
 	_redraw();
 	
+	/* check connection every five seconds */
+	setInterval(function(){
+		/* check connection anyway in case there is no item */
+		$.getJSON("/check?_="+(new Date()).getTime(), function(res){
+			if (res.status === true) _last = (new Date()).getTime();
+		});
+		if (((new Date()).getTime() - _last) > 30000) {
+			_fails++;
+			// nsa down
+			if (_fails === 3) {
+				_alert("Connection Lost!");
+			}
+			if (_fails > 3) {
+				$.getJSON("/check?_="+(new Date()).getTime(), function(res){
+					if (res.status === true) document.location.reload(true);
+				});
+			}
+		} else {
+			_fails = 0;
+			$("#alert").hide();
+		}
+	},5000);
+	
 });
 
 $(window).resize(function(){
@@ -58,6 +86,13 @@ var _redraw = function(){
 	var _top = (($(window).innerWidth()-$('#grid').outerWidth())/2);
 }
 var _template = '<div id="node-{{id}}" class="item {{#active}}active{{/active}}{{^active}}inactive{{/active}}"><div class="grid-item clearfix"><h1 class="clearfix"><span class="service">{{service}}</span><span class="node">{{node}}</span></h1><ul class="content"><li class="uptime"><span>{{#active}}uptime{{/active}}{{^active}}downtime{{/active}}</span> <strong>{{#active}}{{uptime}}{{/active}}{{^active}}0s{{/active}}</strong></li></ul></div></div>';
+
+var _sound = new Audio('/assets/sound/eas.mp3');
+
+var _alert = function(msg){
+	_sound.play();
+	$('#alert').text(msg).fadeIn('fast');
+}
 
 var _handle = function(node){
 
