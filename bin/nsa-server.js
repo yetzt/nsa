@@ -68,7 +68,7 @@ config.get("listen").forEach(function(l){
 
 	/* send index file */
 	app.get("/", function(req, res){
-		res.sendfile(path.resolve(__dirname, "../assets/html/index.html"));
+		res.sendFile(path.resolve(__dirname, "../assets/html/index.html"));
 	});
 
 	app.get("/check", function(req, res){
