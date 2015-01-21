@@ -5,7 +5,7 @@
 	"main": "nsa.js",
 	"bin": {
 		"nsa": "./bin/nsa-server.js",
-		"nsa-test": "./bin/nsa-test.js",
+		"nsa-test": "./bin/nsa-test.js"
 	},
 	"repository": {
 		"type": "git",
@@ -15,7 +15,7 @@
 		"socket.io": ">= 0.9.16",
 		"commander": ">= 2.2.0",
 		"express": ">= 4.2.0",
-		"dur": ">= 0.0.1"
+		"dur": ">= 0.0.1
 	},
 	"author": "yetzt <git@yetzt.me> (https://github.com/yetzt)",
 	"license": "UNLICENSE",
