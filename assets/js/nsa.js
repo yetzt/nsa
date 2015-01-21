@@ -6,7 +6,7 @@ $(document).ready(function(){
 
 	var $grid = $("#grid");
 
-	var socket = io.connect('/');
+	var socket = io.connect();
 	socket.on('nodes', function(nodes) {
 		nodes.forEach(function(node){
 			_handle(node);
