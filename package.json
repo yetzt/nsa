@@ -1,10 +1,11 @@
 {
 	"name": "nsa",
-	"version": "0.0.5",
+	"version": "0.0.6",
 	"description": "networked status aggregator",
 	"main": "nsa.js",
 	"bin": {
-		"nsa": "./bin/nsa-server.js"
+		"nsa": "./bin/nsa-server.js",
+		"nsa-test": "./bin/nsa-test.js",
 	},
 	"repository": {
 		"type": "git",
