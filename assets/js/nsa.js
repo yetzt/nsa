@@ -1,50 +1,38 @@
 
 $(document).ready(function(){
+	var ui = UI();
 
 	var _last = (new Date()).getTime();
 	var _fails = 0;
 
-	var $grid = $("#grid");
-
 	var socket = io.connect();
 	socket.on('nodes', function(nodes) {
 		nodes.forEach(function(node){
-			_handle(node);
+			ui.update(node);
 		});
 	});
 	
 	socket.on('info', function(node){
 		_last = (new Date()).getTime();
 		_fails = 0;
-		_handle(node);
+		ui.update(node);
 	});
 
-	socket.on('inactive', function(id){
-		$('#node-'+id).removeClass('active').addClass('inactive');
-		$('#node-'+id+' li.uptime span').text('downtime');
+	socket.on('inactive', function(id) {
+		ui.inactivate(id);
 	});
 
-	socket.on('active', function(id){
-		$('#node-'+id).removeClass('inactive').addClass('active');
-		$('#node-'+id+' li.uptime span').text('uptime');
+	socket.on('active', function(id) {
+		ui.activate(id);
 	});
 
-	socket.on('reset', function(id){
-		$('#node-'+id).addClass("info").parent().one("webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend", function(){
-		    // your code when the transition has finished
-			$('#node-'+id).removeClass("info");
-		});
+	socket.on('reset', function(id) {
+		ui.reset(id);
 	});
 
 	socket.on('remove', function(id){
-		$grid.masonry("remove", $('#node-'+id)).masonry();
+		ui.remove(id);
 	});
-	
-	$('#grid').masonry({
-	  columnWidth: 300,
-	  itemSelector: '.item'
-	});
-	_redraw();
 	
 	/* check connection every five seconds */
 	setInterval(function(){
@@ -71,80 +59,12 @@ $(document).ready(function(){
 	
 });
 
-$(window).resize(function(){
-	_redraw();
-});
-
-var _redraw = function(){
-	var $grid = $("#grid");
-	var _side = (($(window).innerWidth()-$grid.outerWidth())/2);
-	if ($grid.outerHeight()+(_side*2) < $(window).innerHeight()) {
-		$('#grid').css('margin', Math.floor(($(window).innerHeight()-$grid.outerHeight())/2)+"px auto");
-	} else {
-		$('#grid').css('margin', _side+"px auto");
-	}
-	var _top = (($(window).innerWidth()-$('#grid').outerWidth())/2);
-}
-var _template = '<div id="node-{{id}}" class="item {{#active}}active{{/active}}{{^active}}inactive{{/active}}"><div class="grid-item clearfix"><h1 class="clearfix"><span class="service">{{service}}</span><span class="node">{{node}}</span></h1><ul class="content"><li class="uptime"><span>{{#active}}uptime{{/active}}{{^active}}downtime{{/active}}</span> <strong>{{#active}}{{uptime}}{{/active}}{{^active}}0s{{/active}}</strong></li></ul></div></div>';
 
 var _sound = new Audio('/assets/sound/eas.mp3');
 
 var _alert = function(msg){
 	_sound.play();
 	$('#alert').text(msg).fadeIn('fast');
-}
-
-var _handle = function(node){
-
-	var $grid = $("#grid");
-	var $node = $('#node-'+node.id);
-
-	if ($node.length > 0) {
-
-		if ($node.hasClass("active") && node.active === false) {
-			$node.removeClass("active").addClass("inactive");
-			$("li.uptime span", $node).text("downtime");
-		}
-
-		if ($node.hasClass("inactive") && node.active === true) {
-			$node.removeClass("inactive").addClass("active");
-			$("li.uptime span", $node).text("uptime");
-		}
-		
-		$("li.uptime strong", $node).text(moment(node.active ? node.lastreset : node.updated).fromNow(true));
-
-		if (node.hasOwnProperty("data") && Object.keys(node.data).length > 0) {
-			for (var key in node.data) if (node.data.hasOwnProperty(key)) {
-				$('strong', '#'+node.id+'-'+key.replace(/[^a-z0-9]/gi,'-')).text(node.data[key]);
-			}
-		}
-
-	} else {
-		
-		var $node = $(Mustache.render(_template, {
-			id: node.id,
-			active: node.active,
-			service: node.service,
-			node: node.node,
-			count: node.count,
-			uptime: moment(node.lastreset).fromNow(true),
-			age: moment(node.created).fromNow(true),
-			updated: moment().diff(node.updated, 'seconds', true).toFixed(1)+"s"
-		}));
-
-		if (node.hasOwnProperty("data") && Object.keys(node.data).length > 0) {
-			for (var key in node.data) if (node.data.hasOwnProperty(key)) {
-				var _key = key.replace(/[^a-z0-9]/gi,'-');
-				$("ul.content", $node).append('<li id="'+node.id+'-'+_key+'"><span>'+key+'</span> <strong>'+node.data[key]+'</strong></li>');
-			}
-		}
-		
-		$grid.prepend($node);
-		$grid.masonry("prepended", $node);
-	}
-	
-	_redraw();
-
 }
 
 if (!Array.prototype.forEach){
@@ -160,4 +80,106 @@ if (!Array.prototype.forEach){
 		};
 	};
 };
+
+function UI() {
+	var $grid = $("#grid");
+	
+	$('#grid').masonry({
+	  columnWidth: 300,
+	  itemSelector: '.item'
+	});
+	_redraw();
+
+	$(window).resize(function(){
+		_redraw();
+	});
+
+	function _redraw(){
+		var $grid = $("#grid");
+		var _side = (($(window).innerWidth()-$grid.outerWidth())/2);
+		if ($grid.outerHeight()+(_side*2) < $(window).innerHeight()) {
+			$('#grid').css('margin', Math.floor(($(window).innerHeight()-$grid.outerHeight())/2)+"px auto");
+		} else {
+			$('#grid').css('margin', _side+"px auto");
+		}
+		var _top = (($(window).innerWidth()-$('#grid').outerWidth())/2);
+	}
+	var _template = '<div id="node-{{id}}" class="item {{#active}}active{{/active}}{{^active}}inactive{{/active}}"><div class="grid-item clearfix"><h1 class="clearfix"><span class="service">{{service}}</span><span class="node">{{node}}</span></h1><ul class="content"><li class="uptime"><span>{{#active}}uptime{{/active}}{{^active}}downtime{{/active}}</span> <strong>{{#active}}{{uptime}}{{/active}}{{^active}}0s{{/active}}</strong></li></ul></div></div>';
+
+
+	var me = {
+		inactivate: function (id) {
+			$('#node-'+id).removeClass('active').addClass('inactive');
+			$('#node-'+id+' li.uptime span').text('downtime');
+		},
+		activate: function (id) {
+			$('#node-'+id).removeClass('inactive').addClass('active');
+			$('#node-'+id+' li.uptime span').text('uptime');
+		},
+		reset: function (id) {
+			$('#node-'+id).addClass("info").parent().one("webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend", function(){
+				// your code when the transition has finished
+				$('#node-'+id).removeClass("info");
+			});
+		},
+		remove: function (id) {
+			$grid.masonry("remove", $('#node-'+id)).masonry();
+		},
+		update: function (node) {
+
+			var $grid = $("#grid");
+			var $node = $('#node-'+node.id);
+
+			if ($node.length > 0) {
+				// update
+
+				if ($node.hasClass("active") && node.active === false) {
+					$node.removeClass("active").addClass("inactive");
+					$("li.uptime span", $node).text("downtime");
+				}
+
+				if ($node.hasClass("inactive") && node.active === true) {
+					$node.removeClass("inactive").addClass("active");
+					$("li.uptime span", $node).text("uptime");
+				}
+				
+				$("li.uptime strong", $node).text(moment(node.active ? node.lastreset : node.updated).fromNow(true));
+
+				if (node.hasOwnProperty("data") && Object.keys(node.data).length > 0) {
+					for (var key in node.data) if (node.data.hasOwnProperty(key)) {
+						$('strong', '#'+node.id+'-'+key.replace(/[^a-z0-9]/gi,'-')).text(node.data[key]);
+					}
+				}
+
+			} else {
+				// add
+				
+				var $node = $(Mustache.render(_template, {
+					id: node.id,
+					active: node.active,
+					service: node.service,
+					node: node.node,
+					count: node.count,
+					uptime: moment(node.lastreset).fromNow(true),
+					age: moment(node.created).fromNow(true),
+					updated: moment().diff(node.updated, 'seconds', true).toFixed(1)+"s"
+				}));
+
+				if (node.hasOwnProperty("data") && Object.keys(node.data).length > 0) {
+					for (var key in node.data) if (node.data.hasOwnProperty(key)) {
+						var _key = key.replace(/[^a-z0-9]/gi,'-');
+						$("ul.content", $node).append('<li id="'+node.id+'-'+_key+'"><span>'+key+'</span> <strong>'+node.data[key]+'</strong></li>');
+					}
+				}
+				
+				$grid.prepend($node);
+				$grid.masonry("prepended", $node);
+			}
+			
+			_redraw();
+		}
+	}
+
+	return me;
+}
 
