@@ -134,8 +134,11 @@ function UI() {
 		var offsetY = (height - (newTileHeight + newMargin)*bestResult.rowCount + newMargin)/2;
 
 		instanceList.forEach(function (instance, index) {
+			instance.$.css({index:100+index})
+
 			var x = index % bestResult.colCount;
 			var y = Math.floor(index / bestResult.colCount);
+			if (y % 2 == 1) x = bestResult.colCount - 1 - x;
 
 			x = (x*(newTileWidth  + newMargin) + offsetX);
 			y = (y*(newTileHeight + newMargin) + offsetY);
