@@ -87,7 +87,7 @@ function UI() {
 
 	var tileWidth  = 320;
 	var tileHeight = 160;
-	var margin = 10;
+	var margin = 20;
 
 	_layout();
 
