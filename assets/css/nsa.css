@@ -58,6 +58,7 @@ body {
 			transition-property: background-color, opacity, transform;
 			transition-duration: 0.3s;
 			transform-origin: 0 0;
+			box-shadow: 0 0 20px rgba(0,0,0,0.5);
 		}
 		
 		#grid .item.active {
