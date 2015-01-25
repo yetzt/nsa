@@ -89,11 +89,19 @@ function UI() {
 	var tileHeight = 160;
 	var margin = 20;
 
-	_layout();
+	var doLayout = true;
 
-	$(window).resize(function(){
-		_layout();
+	$(window).resize(function() {
+		doLayout = true;
 	});
+
+	var doLayout = true;
+	setInterval(function () {
+		if (doLayout) {
+			_layout();
+			doLayout = false;
+		}
+	}, 1000);
 
 	function _layout() {
 		var width  = $container.width();
@@ -178,7 +186,6 @@ function UI() {
 			if (!instance) return;
 			instance.data.active = false;
 			updateInstance(instance);
-
 		},
 		activate: function (id) {
 			var instance = instances[id];
@@ -192,7 +199,7 @@ function UI() {
 			var instance = instances[id];
 			if (!instance) return;
 			removeInstance(id);
-			_layout();
+			doLayout = true;
 		},
 		update: function (node) {
 			var instance = instances[node.id];
@@ -205,8 +212,7 @@ function UI() {
 				// add
 				addInstance(node);
 			}
-			
-			_layout();
+			doLayout = true;
 		}
 	}
 
