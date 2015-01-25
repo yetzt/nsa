@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
-var path = require("path");
-var nsa = require(path.resolve(__dirname, "../nsa.js"));
+var path = require('path');
+var NSA = require(path.resolve(__dirname, '../nsa.js'));
 
 var hearts = [];
 
@@ -29,22 +29,67 @@ var instances = [
 ]
 
 instances.forEach(function (instance, index) {
-	hearts.push(new nsa({
-		server: "udp4:127.0.0.1:46002",
+	var nsaConfig = {
+		server: 'udp4:127.0.0.1:46002',
 		service: instance.service,
 		node: instance.node,
-		interval: "10s"
-	}).start(function() {
-		console.log("node "+index+" started");
-	}));
+		interval: '3s'
+	};
+
+	var nsa = new NSA(nsaConfig).start(function() {
+		console.log('node '+index+' started');
+
+		var n = 0;
+		var active = true;
+		var alive = true;
+		setInterval(function () {
+			if (!active) return;
+			if (!alive) return;
+			n++;
+			nsa.leak({a:n})
+		}, randomTime(10, 40));
+
+		setInterval(function () {
+			if (!active) return;
+			if (!alive) return;
+			active = false;
+			nsa.end(function () {
+				setTimeout(function () {
+					nsa = new NSA(nsaConfig);
+					nsa.start(function () {
+						active = true
+					});
+				}, randomTime(10, 40));
+			})
+		}, randomTime(10, 40));
+
+		setInterval(function () {
+			if (!active) return;
+			if (!alive) return;
+			alive = false;
+			nsa.stop(function () {
+				setTimeout(function () {
+					nsa.start(function () {
+						alive = true
+					});
+				}, randomTime(10, 40));
+			})
+		}, randomTime(10, 40));
+	});
+	hearts.push(nsa);
 });
 
-process.on("SIGINT", function(){
-	console.log("stopping...")
+process.on('SIGINT', function(){
+	console.log('stopping...')
 	hearts.forEach(function(h){
 		h.end();
 	});
+	hearts = false;
 	setTimeout(function(){
 		process.exit();
-	},5000);
+	},3000);
 });
+
+function randomTime(from, to) {
+	return 1000*(from + (to-from)*Math.random());
+}
