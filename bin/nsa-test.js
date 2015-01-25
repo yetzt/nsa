@@ -6,27 +6,29 @@ var NSA = require(path.resolve(__dirname, '../nsa.js'));
 var hearts = [];
 
 var instances = [
-	{service:'lovemeter', node:'hydra.opendatacity.de'},
-	{service:'lobbyradar', node:'nyx.datenfreunde.net'},
-	{service:'lettycalypse', node:'hydra.opendatacity.de'},
-	{service:'blablaπ', node:'nyx.datenfreunde.net'},
-	{service:'datenblumen', node:'nyx.datenfreunde.net'},
-	{service:'renderit', node:'styx.opendatacity.de'},
-	{service:'cccountdown', node:'hydra.opendatacity.de'},
-	{service:'smarties', node:'kiesinger.okfn.de'},
-	{service:'tilethief', node:'kiesinger.okfn.de'},
-	{service:'zugsonar', node:'styx.opendatacity.de'},
-	{service:'lobbymail', node:'nyx.datenfreunde.net'},
-	{service:'flightradar', node:'nyx.datenfreunde.net'},
-	{service:'tilecop', node:'nyx.datenfreunde.net'},
-	{service:'tilethief', node:'nyx.datenfreunde.net'},
-	{service:'tileit', node:'styx.opendatacity.de'},
-	{service:'tilecop', node:'styx.opendatacity.de'},
-	{service:'ships', node:'styx.opendatacity.de'},
-	{service:'tilethief', node:'styx.opendatacity.de'},
-	{service:'tilethief', node:'mcp.netzguerilla.net'},
-	{service:'tilethief', node:'jam.netzguerilla.net'}
-]
+	{service:'whatever', node:'blog.fefe.gov'},
+	{service:'thingie', node:'dev.nsa.gov'},
+	{service:'this', node:'localhost'},
+	{service:'π', node:'server3.14159.nsa.gov'},
+	{service:'undefined', node:'undefined'},
+	{service:'hello server', node:'localhost'},
+	{service:'blafasel', node:'localhost'},
+	{service:'another service', node:'gchq.gov.uk'},
+	{service:'wait, what?', node:'server666.nsa.gov'},
+	{service:'hello world', node:'localhost'},
+	{service:'syntax error', node:'server2.nsa.gov'},
+	{service:'zackbumm', node:'server1.nsa.gov'},
+	{service:'next big thing', node:'research.nsa.gov'},
+	{service:'index.js', node:'localhost'},
+	{service:'look away', node:'unknown.nsa.gov'},
+	{service:'secret script', node:'unknown.nsa.gov'},
+	{service:'skynet', node:'server7.nsa.gov'},
+	{service:'botnet', node:'server0.nsa.gov'},
+	{service:'my inbox', node:'server1.nsa.gov'},
+	{service:'botnet', node:'server1.nsa.gov'},
+	{service:'botnet', node:'server2.nsa.gov'},
+	{service:'botnet', node:'server3.nsa.gov'}
+];
 
 instances.forEach(function (instance, index) {
 	var nsaConfig = {
