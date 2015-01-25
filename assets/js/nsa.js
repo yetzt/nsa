@@ -19,7 +19,7 @@ $(document).ready(function(){
 	});
 
 	socket.on('inactive', function(id) {
-		ui.inactivate(id);
+		ui.deactivate(id);
 	});
 
 	socket.on('active', function(id) {
@@ -82,101 +82,116 @@ if (!Array.prototype.forEach){
 };
 
 function UI() {
-	var $grid = $("#grid");
-	
-	$('#grid').masonry({
-	  columnWidth: 300,
-	  itemSelector: '.item'
-	});
-	_redraw();
+	var instances = {};
+	var $container = $('#grid');
+
+	var tileWidth  = 300;
+	var tileHeight = 140;
+	var margin = 10;
+
+	_layout();
 
 	$(window).resize(function(){
-		_redraw();
+		_layout();
 	});
 
-	function _redraw(){
-		var $grid = $("#grid");
-		var _side = (($(window).innerWidth()-$grid.outerWidth())/2);
-		if ($grid.outerHeight()+(_side*2) < $(window).innerHeight()) {
-			$('#grid').css('margin', Math.floor(($(window).innerHeight()-$grid.outerHeight())/2)+"px auto");
-		} else {
-			$('#grid').css('margin', _side+"px auto");
-		}
-		var _top = (($(window).innerWidth()-$('#grid').outerWidth())/2);
-	}
-	var _template = '<div id="node-{{id}}" class="item {{#active}}active{{/active}}{{^active}}inactive{{/active}}"><div class="grid-item clearfix"><h1 class="clearfix"><span class="service">{{service}}</span><span class="node">{{node}}</span></h1><ul class="content"><li class="uptime"><span>{{#active}}uptime{{/active}}{{^active}}downtime{{/active}}</span> <strong>{{#active}}{{uptime}}{{/active}}{{^active}}0s{{/active}}</strong></li></ul></div></div>';
+	function _layout() {
+		var width  = $container.width();
+		var height = $container.height();
 
+		var instanceList = Object.keys(instances).map(function (id) { return instances[id]; })
+		instanceList.sort(function (a,b) {
+			if (a.data.service == b.data.service) return a.data.node < b.data.node ? -1 : 1;
+			return a.data.service < b.data.service ? -1 : 1;
+		})
+
+		var tileCount = instanceList.length;
+		var maxRows = Math.sqrt(tileCount)+3;
+		var bestResult = {error: 1e10};
+		for (var rowCount = 1; rowCount < maxRows; rowCount++) {
+			var colCount = Math.ceil(tileCount/rowCount);
+			var gridWidth  = margin + (margin + tileWidth )*colCount;
+			var gridHeight = margin + (margin + tileHeight)*rowCount;
+			var scaleFactor = Math.min(width/gridWidth, height/gridHeight);
+			var error = width*height - tileWidth*tileHeight*tileCount*scaleFactor*scaleFactor;
+			if (error < bestResult.error) bestResult = { error:error, rowCount:rowCount, colCount:colCount, scaleFactor:scaleFactor }
+		}
+
+		var scaleFactor = Math.min(1, bestResult.scaleFactor);
+		var newTileWidth  = tileWidth *scaleFactor;
+		var newTileHeight = tileHeight*scaleFactor;
+		var newMargin = margin*scaleFactor;
+
+		var offsetX = (width  - (newTileWidth  + newMargin)*bestResult.colCount + newMargin)/2;
+		var offsetY = (height - (newTileHeight + newMargin)*bestResult.rowCount + newMargin)/2;
+
+		instanceList.forEach(function (instance, index) {
+			var x = index % bestResult.colCount;
+			var y = Math.floor(index / bestResult.colCount);
+			x = (x*(newTileWidth  + newMargin) + offsetX);
+			y = (y*(newTileHeight + newMargin) + offsetY);
+			if ((x != instance.x) || (y != instance.y)) {
+				instance.$.css({transform:'translate('+x+'px, '+y+'px) scale('+scaleFactor+')'})
+			}
+		});
+	}
+
+	function updateInstance(instance) {
+		var data = instance.data;
+		instance.$.toggleClass('active', data.active);
+		instance.$.find('li.uptime span').text(data.active ? 'uptime' : 'downtime');
+		instance.$.find('li.uptime strong').text(moment(data.active ? data.lastreset : data.updated).fromNow(true));
+	}
+
+	function addInstance(data) {
+		if (instances[data.id]) removeInstance(data.id);
+		var instance = {};
+		instances[data.id] = instance;
+
+		instance.data = data;
+		instance.$ = $('<div class="item"><h1 class="clearfix"><span class="service"></span><br><span class="node"></span></h1><ul class="content"><li class="uptime"><span>uptime</span> <strong>0s</strong></li></ul></div>');
+
+		instance.$.find('.service').text(data.service);
+		instance.$.find('.node').text(data.node);
+		instance.$.appendTo($container);
+		instance.$.css({ width: tileWidth, height: tileHeight });
+	}
 
 	var me = {
-		inactivate: function (id) {
-			$('#node-'+id).removeClass('active').addClass('inactive');
-			$('#node-'+id+' li.uptime span').text('downtime');
+		deactivate: function (id) {
+			var instance = instances[id];
+			if (!instance) return;
+			instance.data.active = false;
+			updateInstance(instance);
+
 		},
 		activate: function (id) {
-			$('#node-'+id).removeClass('inactive').addClass('active');
-			$('#node-'+id+' li.uptime span').text('uptime');
+			var instance = instances[id];
+			if (!instance) return;
+			instance.data.active = true;
+			updateInstance(instance);
 		},
 		reset: function (id) {
-			$('#node-'+id).addClass("info").parent().one("webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend", function(){
-				// your code when the transition has finished
-				$('#node-'+id).removeClass("info");
-			});
 		},
 		remove: function (id) {
-			$grid.masonry("remove", $('#node-'+id)).masonry();
+			var instance = instances[id];
+			if (!instance) return;
+			removeInstance(id);
+			_layout();
 		},
 		update: function (node) {
+			var instance = instances[node.id];
 
-			var $grid = $("#grid");
-			var $node = $('#node-'+node.id);
-
-			if ($node.length > 0) {
+			if (instance) {
 				// update
-
-				if ($node.hasClass("active") && node.active === false) {
-					$node.removeClass("active").addClass("inactive");
-					$("li.uptime span", $node).text("downtime");
-				}
-
-				if ($node.hasClass("inactive") && node.active === true) {
-					$node.removeClass("inactive").addClass("active");
-					$("li.uptime span", $node).text("uptime");
-				}
-				
-				$("li.uptime strong", $node).text(moment(node.active ? node.lastreset : node.updated).fromNow(true));
-
-				if (node.hasOwnProperty("data") && Object.keys(node.data).length > 0) {
-					for (var key in node.data) if (node.data.hasOwnProperty(key)) {
-						$('strong', '#'+node.id+'-'+key.replace(/[^a-z0-9]/gi,'-')).text(node.data[key]);
-					}
-				}
-
+				instance.data = node;
+				updateInstance(instance);
 			} else {
 				// add
-				
-				var $node = $(Mustache.render(_template, {
-					id: node.id,
-					active: node.active,
-					service: node.service,
-					node: node.node,
-					count: node.count,
-					uptime: moment(node.lastreset).fromNow(true),
-					age: moment(node.created).fromNow(true),
-					updated: moment().diff(node.updated, 'seconds', true).toFixed(1)+"s"
-				}));
-
-				if (node.hasOwnProperty("data") && Object.keys(node.data).length > 0) {
-					for (var key in node.data) if (node.data.hasOwnProperty(key)) {
-						var _key = key.replace(/[^a-z0-9]/gi,'-');
-						$("ul.content", $node).append('<li id="'+node.id+'-'+_key+'"><span>'+key+'</span> <strong>'+node.data[key]+'</strong></li>');
-					}
-				}
-				
-				$grid.prepend($node);
-				$grid.masonry("prepended", $node);
+				addInstance(node);
 			}
 			
-			_redraw();
+			_layout();
 		}
 	}
 
