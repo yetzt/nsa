@@ -85,8 +85,8 @@ function UI() {
 	var instances = {};
 	var $container = $('#grid');
 
-	var tileWidth  = 300;
-	var tileHeight = 140;
+	var tileWidth  = 320;
+	var tileHeight = 160;
 	var margin = 10;
 
 	_layout();
@@ -138,9 +138,19 @@ function UI() {
 
 	function updateInstance(instance) {
 		var data = instance.data;
-		instance.$.toggleClass('active', data.active);
+		instance.$.toggleClass(  'active',  data.active);
+		instance.$.toggleClass('inactive', !data.active);
 		instance.$.find('li.uptime span').text(data.active ? 'uptime' : 'downtime');
 		instance.$.find('li.uptime strong').text(moment(data.active ? data.lastreset : data.updated).fromNow(true));
+
+		var attr = instance.data.data;
+		if (attr) {
+			instance.$.find('li.attr').remove();
+			var $ul = instance.$.find('ul.content');
+			Object.keys(attr).forEach(function (key) {
+				$ul.append($('<li class="attr"><span>'+key+'</span> <strong>'+attr[key]+'</strong></li>'))
+			})
+		};
 	}
 
 	function addInstance(data) {
@@ -155,6 +165,11 @@ function UI() {
 		instance.$.find('.node').text(data.node);
 		instance.$.appendTo($container);
 		instance.$.css({ width: tileWidth, height: tileHeight });
+	}
+
+	function removeInstance(id) {
+		instances[id].$.remove();
+		delete instances[id];
 	}
 
 	var me = {
