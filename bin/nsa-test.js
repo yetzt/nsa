@@ -30,6 +30,8 @@ var instances = [
 	{service:'botnet', node:'server3.nsa.gov'}
 ];
 
+var timers = [];
+
 instances.forEach(function (instance, index) {
 	var nsaConfig = {
 		server: 'udp4:127.0.0.1:46002',
@@ -44,14 +46,14 @@ instances.forEach(function (instance, index) {
 		var n = 0;
 		var active = true;
 		var alive = true;
-		setInterval(function () {
+		timers.push(setInterval(function () {
 			if (!active) return;
 			if (!alive) return;
 			n++;
 			nsa.leak({a:n})
-		}, randomTime(10, 40));
+		}, randomTime(10, 40)));
 
-		setInterval(function () {
+		timers.push(setInterval(function () {
 			if (!active) return;
 			if (!alive) return;
 			active = false;
@@ -63,9 +65,9 @@ instances.forEach(function (instance, index) {
 					});
 				}, randomTime(10, 40));
 			})
-		}, randomTime(10, 40));
+		}, randomTime(10, 40)));
 
-		setInterval(function () {
+		timers.push(setInterval(function () {
 			if (!active) return;
 			if (!alive) return;
 			alive = false;
@@ -76,17 +78,20 @@ instances.forEach(function (instance, index) {
 					});
 				}, randomTime(10, 40));
 			})
-		}, randomTime(10, 40));
+		}, randomTime(10, 40)));
 	});
+	
 	hearts.push(nsa);
 });
 
 process.on('SIGINT', function(){
 	console.log('stopping...')
+	timers.forEach(function(t){
+		clearInterval(t);
+	});
 	hearts.forEach(function(h){
 		h.end();
 	});
-	hearts = false;
 	setTimeout(function(){
 		process.exit();
 	},3000);
