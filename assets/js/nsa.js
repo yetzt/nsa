@@ -136,10 +136,22 @@ function UI() {
 		instanceList.forEach(function (instance, index) {
 			var x = index % bestResult.colCount;
 			var y = Math.floor(index / bestResult.colCount);
+
 			x = (x*(newTileWidth  + newMargin) + offsetX);
 			y = (y*(newTileHeight + newMargin) + offsetY);
+
 			if ((x != instance.x) || (y != instance.y)) {
+				if (!instance.initialized) instance.$.addClass('notransition');
 				instance.$.css({transform:'translate('+x+'px, '+y+'px) scale('+scaleFactor+')'})
+				if (!instance.initialized) {
+					instance.$.get(0).offsetHeight;
+					instance.$.removeClass('notransition');
+					instance.$.removeClass('hidden');
+					instance.initialized = true;
+				}
+
+				instance.x = x;
+				instance.y = y;
 			}
 		});
 	}
@@ -167,7 +179,7 @@ function UI() {
 		instances[data.id] = instance;
 
 		instance.data = data;
-		instance.$ = $('<div class="item"><h1 class="clearfix"><span class="service"></span><br><span class="node"></span></h1><ul class="content"><li class="uptime"><span>uptime</span> <strong>0s</strong></li></ul></div>');
+		instance.$ = $('<div class="item hidden"><h1 class="clearfix"><span class="service"></span><br><span class="node"></span></h1><ul class="content"><li class="uptime"><span>uptime</span> <strong>0s</strong></li></ul></div>');
 
 		instance.$.find('.service').text(data.service);
 		instance.$.find('.node').text(data.node);
@@ -176,7 +188,11 @@ function UI() {
 	}
 
 	function removeInstance(id) {
-		instances[id].$.remove();
+		var $instance = instances[id].$;
+		$instance.addClass('hidden');
+		setTimeout(function () {
+			$instance.remove();
+		}, 2000);
 		delete instances[id];
 	}
 
