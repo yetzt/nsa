@@ -85,9 +85,9 @@ function UI() {
 	var instances = {};
 	var $container = $('#grid');
 
-	var tileWidth  = 320;
+	var tileWidth  = 400;
 	var tileHeight = 160;
-	var margin = 20;
+	var margin = 10;
 
 	var doLayout = true;
 
