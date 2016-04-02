@@ -2,8 +2,6 @@
 
 NSA sees all, because NSA is the Networked Status Aggregator.
 
-![nsa successful in europe](nsa.jpg)
-
 The idea is simple: NSA sends hartbeat messages over network sockets (currently only UDP) and the [nsa-server](https://www.npmjs.com/package/nsa-server) displays running services on a web interface (and, in the future, does other stuff with them).
 
 NSA is as simple as possible: Clients just send heartbeats and the NSA Server displays new clients on the go. 
