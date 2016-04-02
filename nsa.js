@@ -1,12 +1,13 @@
 #!/usr/bin/env node
 
-/* node modules */
+// node modules
 var url = require("url");
 var path = require("path");
 var dgram = require("dgram");
 
-/* npm modules */
+// npm modules
 var dur = require("dur");
+var debug = require("debug")("nsa");
 
 function nsa(opts, callback){
 	
@@ -18,7 +19,6 @@ function nsa(opts, callback){
 	
 	var self = this;
 	
-	this.debug = false;
 	this.ready = false;
 	this.ended = false;
 	this.queue = [];
@@ -27,10 +27,7 @@ function nsa(opts, callback){
 	this.version = 0;
 	this.timer = null;
 		
-	/* check debug */
-	if (opts.hasOwnProperty("debug") && opts.debug === true) this.debug = true;
-
-	/* check server */
+	// check server
 	if (!opts.hasOwnProperty("server") || typeof opts.server !== "string" || opts.server === "") {
 		callback.call(this, new Error("invalid server"));
 		return this;
@@ -39,25 +36,25 @@ function nsa(opts, callback){
 	try {
 		this.opts.server = url.parse(opts.server);
 	} catch (e) {
-		callback(e);
+		callback.call(this, e);
 		return this;
 	}
 		
-	/* check service or set */
+	// check service or set
 	if (!opts.hasOwnProperty("service") || typeof opts.service !== "string" || opts.service === "") {
 		this.opts.service = path.basename(process.mainModule.filename, ".js");
 	} else {
 		this.opts.service = opts.service;
 	}
 
-	/* check nodename or set */
+	// check nodename or set
 	if (!opts.hasOwnProperty("node") || typeof opts.node !== "string" || opts.node === "") {
 		this.opts.node = require("os").hostname();
 	} else {
 		this.opts.node = opts.node;
 	}
 
-	/* check interval */
+	// check interval
 	if (!opts.hasOwnProperty("interval")) {	
 		callback.call(this, new Error("invalid interval"));
 		return this;
@@ -78,7 +75,7 @@ function nsa(opts, callback){
 		case "udp4":
 		case "udp6":
 			
-			/* check server.port */
+			// check server.port
 			if (!this.opts.server.hasOwnProperty("port") || typeof this.opts.server.port !== "string" || this.opts.server.port === "") {
 				callback.call(this, new Error("invalid server.port"));
 				return this;
@@ -89,7 +86,7 @@ function nsa(opts, callback){
 				return this;
 			}
 
-			/* check server.hostname */
+			// check server.hostname
 			if (!this.opts.server.hasOwnProperty("hostname") || typeof this.opts.server.hostname !== "string" || this.opts.server.hostname === "") {
 				callback.call(this, new Error("invalid server.hostname"));
 				return this;
@@ -98,29 +95,29 @@ function nsa(opts, callback){
 			this._client = dgram.createSocket(this.opts.protocol);
 
 			this._client.on("listening", function(){
-				if (self.debug) console.log("listening");
+				debug("listening");
 			});
 
 			this._client.on("close", function(){
-				if (self.debug) console.log("close");
+				debug("close");
 			});
 
 			this._client.on("error", function(err){
-				if (self.debug) console.log("error", err);
+				debug("error", err);
 			});
 
 			this._send = function(type, data, callback) {
 
-				/* when no data shift callback */
+				// when no data shift callback
 				if (typeof data === "function") {
 					var callback = data;
 					var data = null;
 				};
 				
-				/* when no callback, define error-throwing callback */
+				// when no callback, define error-throwing callback
 				if (typeof callback !== "function") var callback = function(err) { if (err) throw err; };
 
-				/* error when not ready */
+				// error when not ready
 				if (!this.ready) {
 					callback.call(this, new Error("not ready"));
 					return this;
@@ -131,7 +128,7 @@ function nsa(opts, callback){
 					return this;
 				};
 
-				/* try to build packet */
+				// try to build packet
 				try {
 					if (data) {
 						var message = new Buffer(JSON.stringify([this.version,type,this.count++,this.opts.service,this.opts.node,this.opts.interval,data]));
@@ -143,9 +140,9 @@ function nsa(opts, callback){
 					return this;
 				}
 				
-				if (this.debug) console.log("send", message.toString());
+				debug("sending %s", message.toString());
 				
-				/* try sending packet */
+				// try sending packet
 				this._client.send(message, 0, message.length, this.opts.server.port, this.opts.server.hostname, function(err, bytes) {
 					if (err) {
 						callback.call(self, err);
@@ -159,7 +156,7 @@ function nsa(opts, callback){
 			
 			this._end = function(callback){
 
-				/* when no callback, define error-throwing callback */
+				// when no callback, define error-throwing callback
 				if (typeof callback !== "function") var callback = function(err) { if (err) throw err; };
 				
 				if (this.ended) {
@@ -176,7 +173,6 @@ function nsa(opts, callback){
 			
 			self.ready = true;
 			
-
 		break;
 		// want sockets, tcp, http, whatever? tap in here.
 		default: 
@@ -193,26 +189,26 @@ function nsa(opts, callback){
 	
 }
 
-/* check ready state or register callback for when ready */
+// check ready state or register callback for when ready
 nsa.prototype.ready = function(callback){
 	if (typeof callback !== "function") return this.ready;
 	if (this.ready) {
-		callback.call(this);
+		callback.call(this,null,this);
 		return this;
 	}
 	this.queue.push(callback);
 	return this;
 };
 
-/* send heartbeat */
+// send heartbeat
 nsa.prototype.beat = function(callback){
 	this._send.call(this, 0, callback);
 };
 
-/* stop heartbeats and send retirement packet to server */
+// stop heartbeats and send retirement packet to server
 nsa.prototype.end = function(callback){
 
-	/* if no callback, define noop callback */
+	// if no callback, define noop callback
 	if (typeof callback !== "function") var callback = function(){};
 
 	this.stop(function(){
@@ -224,76 +220,80 @@ nsa.prototype.end = function(callback){
 	});
 };
 
-/* send data */
-nsa.prototype.leak = function(data, callback){
+// send data
+nsa.prototype.leak = nsa.prototype.send = function(data, callback){
 	this._send.call(this, 2, data, callback);
 };
 
-/* start sending regular heartbeats */
+// start sending regular heartbeats
 nsa.prototype.start = function(callback){
 
-	/* if no callback, define noop callback */
+	// if no callback, define noop callback
 	if (typeof callback !== "function") var callback = function(){};
 
-	/* if not ready, queue this */
+	// if not ready, queue this
 	if (!this.ready) {
-		console.log("waiting");
+		debug("waiting for ready state");
 		this.queue.push(function(){
-			console.log("now!");
+			debug("ready");
 			this.start();
 		});
 		return this;
 	};
+	debug("ready");
 	
-	/* do nothing if timer is already set */
+	// do nothing if timer is already set
 	if (this.timer !== null) {
 		callback.call(this, new Error("already running"));
 		return this;
 	}
 	
-	/* set timer for sending heartbeats */
+	// set timer for sending heartbeats
 	var self = this;
 	this.timer = setInterval(function(){
 		self.beat.call(self);
 	}, this.opts.interval);
 	
-	/* and send one heartbeat right now */
+	// and send one heartbeat right now
 	this.beat.call(this);
 
-	/* call back */
+	// call back
 	callback.call(this, null);
 	return this;
 
 };
 
-/* stop sending regular heartbeats */
+// stop sending regular heartbeats
 nsa.prototype.stop = function(callback){
 
-	/* if no callback, define noop callback */
+	// if no callback, define noop callback
 	if (typeof callback !== "function") var callback = function(){};
 
-	/* if not ready, queue this */
+	// if not ready, queue this
 	if (!this.ready) {
+    debug("waitung for ready state");
 		this.queue.push(function(){
 			this.stop();
 		});
 		return this;
 	};
+
+  debug("stopping");
 	
-	/* check if timer is already cleared */
+	// check if timer is already cleared
 	if (this.timer === null) {
 		callback.call(this, new Error("not running"));
 		return this;
 	}
 	
-	/* end timer */
+	// end timer
 	clearInterval(this.timer);
 	this.timer = null;
 	
-	/* call back */
+	// call back
 	callback.call(this, null);
 	return this;
 };
 
-/* export module */
+// export module
 module.exports = nsa;
