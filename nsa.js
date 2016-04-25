@@ -54,14 +54,9 @@ function nsa(opts, callback){
 		this.opts.node = opts.node;
 	}
 
-	// check interval
-	if (!opts.hasOwnProperty("interval")) {	
-		callback.call(this, new Error("invalid interval"));
-		return this;
-	} 
-
+	// parse interval
+	if (!opts.hasOwnProperty("interval")) opts.interval = "10s"; // default interval
 	if (typeof opts.interval === "string") opts.interval = dur(opts.interval);
-
 	if (typeof opts.interval !== "number" || isNaN(opts.interval) || opts.interval <= 0 || opts.interval === Infinity) {
 		callback.call(this, new Error("invalid interval"));
 		return this;
@@ -191,107 +186,117 @@ function nsa(opts, callback){
 
 // check ready state or register callback for when ready
 nsa.prototype.ready = function(callback){
-	if (typeof callback !== "function") return this.ready;
-	if (this.ready) {
-		callback.call(this,null,this);
-		return this;
+	var self = this;
+	if (typeof callback !== "function") return self.ready;
+	if (self.ready) {
+		callback.call(self,null,self);
+		return self;
 	}
-	this.queue.push(callback);
+	self.queue.push(callback);
 	return this;
 };
 
 // send heartbeat
 nsa.prototype.beat = function(callback){
-	this._send.call(this, 0, callback);
+	var self = this;
+	self._send.call(self, 0, callback);
+	return this;
 };
 
 // stop heartbeats and send retirement packet to server
 nsa.prototype.end = function(callback){
+	var self = this;
 
 	// if no callback, define noop callback
 	if (typeof callback !== "function") var callback = function(){};
 
-	this.stop(function(){
-		this._send.call(this, 1, function(){
-			this._end.call(this, function(){
-				callback.call(this);
+	self.stop(function(){
+		self._send.call(self, 1, function(){
+			self._end.call(self, function(){
+				callback.call(self);
 			});
 		});
 	});
+	
+	return this;
 };
 
 // send data
 nsa.prototype.leak = nsa.prototype.send = function(data, callback){
-	this._send.call(this, 2, data, callback);
+	var self = this;
+	self._send.call(self, 2, data, callback);
+	return this;
 };
 
 // start sending regular heartbeats
 nsa.prototype.start = function(callback){
+	var self = this;
 
 	// if no callback, define noop callback
 	if (typeof callback !== "function") var callback = function(){};
 
 	// if not ready, queue this
-	if (!this.ready) {
+	if (!self.ready) {
 		debug("waiting for ready state");
-		this.queue.push(function(){
+		self.queue.push(function(){
 			debug("ready");
-			this.start();
+			self.start();
 		});
-		return this;
+		return self;
 	};
 	debug("ready");
 	
 	// do nothing if timer is already set
-	if (this.timer !== null) {
-		callback.call(this, new Error("already running"));
-		return this;
+	if (self.timer !== null) {
+		callback.call(self, new Error("already running"));
+		return self;
 	}
 	
 	// set timer for sending heartbeats
-	var self = this;
-	this.timer = setInterval(function(){
+	self.timer = setInterval(function(){
 		self.beat.call(self);
-	}, this.opts.interval);
+	}, self.opts.interval);
 	
 	// and send one heartbeat right now
-	this.beat.call(this);
+	self.beat.call(self);
 
 	// call back
-	callback.call(this, null);
+	callback.call(self, null);
 	return this;
 
 };
 
 // stop sending regular heartbeats
 nsa.prototype.stop = function(callback){
+	var self = this;
 
 	// if no callback, define noop callback
 	if (typeof callback !== "function") var callback = function(){};
 
 	// if not ready, queue this
-	if (!this.ready) {
+	if (!self.ready) {
     debug("waitung for ready state");
-		this.queue.push(function(){
-			this.stop();
+		self.queue.push(function(){
+			self.stop();
 		});
-		return this;
+		return self;
 	};
 
   debug("stopping");
 	
 	// check if timer is already cleared
-	if (this.timer === null) {
-		callback.call(this, new Error("not running"));
-		return this;
+	if (self.timer === null) {
+		callback.call(self, new Error("not running"));
+		return self;
 	}
 	
 	// end timer
-	clearInterval(this.timer);
-	this.timer = null;
+	clearInterval(self.timer);
+	self.timer = null;
 	
 	// call back
-	callback.call(this, null);
+	callback.call(self, null);
+
 	return this;
 };
 
