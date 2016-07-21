@@ -228,6 +228,13 @@ nsa.prototype.leak = nsa.prototype.send = function(data, callback){
 	return this;
 };
 
+// set defcon
+nsa.prototype.defcon = function(level, callback){
+	var self = this;
+	self._send.call(self, 3, level, callback);
+	return this;
+};
+
 // start sending regular heartbeats
 nsa.prototype.start = function(callback){
 	var self = this;

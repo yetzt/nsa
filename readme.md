@@ -38,6 +38,13 @@ heart.stop();
 
 /* tell the nsa server to stop caring about this service */
 heart.end();
+
+/* send data */
+heart.send({data:"json"});
+
+/* set defcon level */
+heart.defcon(0);
+
 ```
 
 ## Message Format
