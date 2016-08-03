@@ -110,7 +110,7 @@ function nsa(opts, callback){
 				};
 				
 				// when no callback, define error-throwing callback
-				if (typeof callback !== "function") var callback = function(err) { if (err) throw err; };
+				if (typeof callback !== "function") var callback = function(err) { if (err) return console.error(err, err.stack); };
 
 				// error when not ready
 				if (!this.ready) {
