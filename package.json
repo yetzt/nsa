@@ -1,29 +1,30 @@
 {
   "name": "nsa",
-  "version": "0.1.4",
+  "version": "0.2.0",
   "description": "networked status aggregator",
-  "main": "nsa.js",
+  "main": "lib/nsa.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/yetzt/nsa.git"
   },
   "dependencies": {
     "debug": "^2.2.0",
-    "dur": "^0.0.2"
+    "dur": "^0.0.2",
+    "quu": "^0.3.0"
   },
   "author": "yetzt <git@yetzt.me> (https://github.com/yetzt)",
-  "contributors": [
-    {
-      "name": "Michael Kreil",
-      "url": "https://github.com/MichaelKreil/"
-    }
-  ],
   "license": "Unlicense",
   "bugs": {
     "url": "https://github.com/yetzt/nsa/issues"
   },
   "homepage": "https://github.com/yetzt/nsa",
   "keywords": [
-    "nsa","network","status","monitor","surveillance","heartbeat","client"
+    "nsa",
+    "network",
+    "status",
+    "monitor",
+    "surveillance",
+    "heartbeat",
+    "client"
   ]
 }
