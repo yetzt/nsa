@@ -1,6 +1,6 @@
 {
   "name": "nsa",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "networked status aggregator",
   "main": "lib/nsa.js",
   "repository": {
