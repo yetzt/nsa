@@ -8,7 +8,7 @@
     "url": "https://github.com/yetzt/nsa.git"
   },
   "dependencies": {
-    "debug": "^2.2.0",
+    "debug": "^4.0.0",
     "dur": "^0.0.2",
     "quu": "^0.3.0"
   },
